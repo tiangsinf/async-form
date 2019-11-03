@@ -1,5 +1,4 @@
 import React from "react";
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,19 +6,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from "@material-ui/core/Divider";
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 
-import useForm from "./hooks/useForm";
-
-const useStyles = makeStyles(theme => ({
-        input: {
-            display: "flex",
-            marginBottom: theme.spacing(1)
-        }
-    }));
+import useForm from "../hooks/useForm";
+import useStyles from "../hooks/useStyles";
+import TypeSelect from "./TypeSelect";
 
 export default function App() {
     const classes = useStyles();
@@ -33,7 +23,7 @@ export default function App() {
         handleFormSubmit,
         errors
     } = useForm(isSubmitted);
-
+    
     function isSubmitted() {
         console.log(`name: ${inputs.name}, email: ${inputs.email}`);
     };
@@ -79,29 +69,7 @@ export default function App() {
                             onChange={handleInputChange}
                             inputRef={mounted}
                         />
-                        <FormControl className={classes.input}>
-                            <InputLabel>Type</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                            >
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl className={classes.input}>
-                            <InputLabel>Target</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                disabled
-                            >
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
-                            </Select>
-                        </FormControl>
+                        <TypeSelect />
                     </DialogContent>
                     <DialogActions>
                         <Button type="submit" disabled={isDisabled}>

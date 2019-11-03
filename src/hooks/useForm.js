@@ -1,5 +1,5 @@
 import React from "react";
-import validate from "../../validators";
+import validate from "../validators";
 
 
 const useForm = callback => {
