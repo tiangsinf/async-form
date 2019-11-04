@@ -9,25 +9,25 @@ import Divider from "@material-ui/core/Divider";
 
 import useForm from "../hooks/useForm";
 import useStyles from "../hooks/useStyles";
-import TypeSelect from "./TypeSelect";
+import DepartmentSelect from "./DepartmentSelect";
 
 export default function App() {
     const classes = useStyles();
 
     const [isDisabled, setIsDisabled] = React.useState(true);
- 
-    const { 
-        inputs, 
-        handleInputChange, 
+
+    const {
+        inputs,
+        handleInputChange,
         handleFormReset,
         handleFormSubmit,
         errors
     } = useForm(isSubmitted);
-    
+
     function isSubmitted() {
         console.log(`name: ${inputs.name}, email: ${inputs.email}`);
     };
-    
+
     // mimic only cDU without cDM:
     const mounted = React.useRef();
     React.useEffect(() => {
@@ -37,7 +37,7 @@ export default function App() {
 
             // cDU logic
         } else if (inputs.name.length >= 3 && inputs.email.length >= 3) {
-                setIsDisabled(false);
+            setIsDisabled(false);
         }
     }, [inputs]);
 
@@ -69,13 +69,13 @@ export default function App() {
                             onChange={handleInputChange}
                             inputRef={mounted}
                         />
-                        <TypeSelect />
+                        <DepartmentSelect />
                     </DialogContent>
                     <DialogActions>
                         <Button type="submit" disabled={isDisabled}>
                             Submit
                         </Button>
-                        <Button 
+                        <Button
                             color="primary"
                             onClick={handleFormReset}
                         >
