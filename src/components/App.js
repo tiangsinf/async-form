@@ -9,7 +9,7 @@ import Divider from "@material-ui/core/Divider";
 
 import useForm from "../hooks/useForm";
 import useStyles from "../hooks/useStyles";
-import DepartmentSelect from "./DepartmentSelect";
+import CourseSelect from "./CourseSelect";
 
 export default function App() {
     const classes = useStyles();
@@ -69,7 +69,7 @@ export default function App() {
                             onChange={handleInputChange}
                             inputRef={mounted}
                         />
-                        <DepartmentSelect />
+                        <CourseSelect />
                     </DialogContent>
                     <DialogActions>
                         <Button type="submit" disabled={isDisabled}>
