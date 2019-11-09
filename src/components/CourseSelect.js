@@ -1,75 +1,116 @@
 import React from "react";
-import PropTypes from "prop-types";
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { MenuItem } from "@material-ui/core";
 import useStyles from "../hooks/useStyles";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-import
+import useForm from "../hooks/useForm"
+import Core from "../api/core.json";
+import Electives from "../api/electives.json";
 
-function CourseSelect() {
+const Courses = {
+    core: Core,
+    electives: Electives
+};
 
-    const [courseSelect, setCourseSelect] = React.useState({
-        department: null,
-        course: null,
-        courses: [],
-        _loading: false
-    });
+function CourseSelect({ department, course }) {
+    const classes = useStyles();
+
+    const { handleInputChange, inputs, _loading } = useForm();
 
     // render and select department
-    const handleDepartmentSelect = e => {
+    const onSelectDepartment = e => {
         const department = e.target.value;
-        const course = null;
-        
-        setCourseSelect(Object.assign({}, courseSelect, {
-            department,
-            course
-        }));
-        props.onChange({ name: "department", value: department });
-        props.onChange({ name: "course", value: course });
-
+        console.log(courseSelect.department);
+        setCourseSelect({...courseSelect, department });
+        // department.onChange({ name: "department", value: department });
+        // course.onChange({ name: "course", value: course });
         if (department) fetch(department);
     };
 
     const fetch = department => {
         setCourseSelect(Object.assign({}, courseSelect, {
             _loading: true,
-            course: []
+            courses: []
         }));
-    }
+        apiClient(department).then(courses => {
+            setCourseSelect(Object.assign({}, courseSelect, {
+                courses: courses
+            }));
+        });
+    };
+
+    function apiClient(department) {
+        return {
+            then: function(callback) {
+                setTimeout(() => {
+                    callback(Courses[department]);
+                }, 1000);
+            }
+        };
+    };
+
+    const onSelectCourse = e => {
+        const course = e.target.value;
+        setCourseSelect(Object.assign({}, courseSelect, { course }))
+
+        course.onChange({ name: "course", value: course });
+    };
+
+    const { handleInputChange } = useForm();
 
     const renderDepartmentSelect = () => {
         return (
             <FormControl className={classes.input}>
-                <InputLabel>Type</InputLabel>
-                <Select onChange={handleDepartmentSelect}>
-                    {departments.map(department => {
-                        return (
-                            <MenuItem key={department.id} value={department.id}>
-                                {department.id} - {department.name}
-                            </MenuItem>
-                        )
-                    })}
+                <InputLabel>Department</InputLabel>
+                <Select 
+                    onChange={console.log(e => e.target.value)} 
+                    value={inputs.department}
+                >
+                    <MenuItem value={""}>Which department?</MenuItem>
+                    <MenuItem value={1}>NodeSchool: Core</MenuItem>
+                    <MenuItem value={"electives"}>NodeSchool: Electives</MenuItem>
                 </Select>
-                <CourseSelect update={selectedDepartment} />
             </FormControl>
         )
     };
 
-    const classes = useStyles(handleDepartmentSelect);
+    const renderCourseSelect = () => {
+        if (_loading) {
+            return <CircularProgress />
+        };
+        if (!inputs.department || !inputs.courses.length) {
+            return <span />
+        };
+        return (
+            <FormControl className={classes.input}>
+                <InputLabel>Course</InputLabel>
+                <Select
+                    onChange={handleInputChange}
+                    value={inputs.course || ""}
+                >
+                    {[
+                        <MenuItem value="" key="course-none">
+                            Which course?
+                        </MenuItem>,
+
+                        ...inputs.courses.map((course, i) => (
+                            <MenuItem value={course} key={i}>{course}</MenuItem>
+                        ))
+                    ]}
+                </Select>
+            </FormControl>
+        )
+    };
+
     return (
         <>
             {renderDepartmentSelect()}
             {renderCourseSelect()}
         </>
     );
-};
-
-CourseSelect.propTypes = {
-    department: PropTypes.string,
-    course: PropTypes.string,
-    handleDepartmentSelect: PropTypes.func.isRequired
 };
 
 export default CourseSelect;

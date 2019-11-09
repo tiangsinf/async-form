@@ -7,9 +7,14 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from "@material-ui/core/Divider";
 
-import useForm from "../hooks/useForm";
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { MenuItem } from "@material-ui/core";
 import useStyles from "../hooks/useStyles";
-import CourseSelect from "./CourseSelect";
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+import useForm from "../hooks/useForm"
 
 export default function App() {
     const classes = useStyles();
@@ -21,7 +26,9 @@ export default function App() {
         handleInputChange,
         handleFormReset,
         handleFormSubmit,
-        errors
+        errors,
+        courses,
+        _loading
     } = useForm(isSubmitted);
 
     function isSubmitted() {
@@ -40,6 +47,55 @@ export default function App() {
             setIsDisabled(false);
         }
     }, [inputs]);
+
+    const renderSelectDepartment = () => {
+        return (
+            <FormControl className={classes.input}>
+                <InputLabel>Department</InputLabel>
+                <Select
+                    name="department"
+                    onChange={handleInputChange} 
+                    value={inputs.department}
+                >
+                    <MenuItem value="">Which department?</MenuItem>
+                    <MenuItem value="core">NodeSchool: Core</MenuItem>
+                    <MenuItem value="electives">NodeSchool: Electives</MenuItem>
+                </Select>
+            </FormControl>
+        )
+    };
+
+    const renderSelectCourse = () => {
+        if (_loading) {
+            return <CircularProgress />
+        };
+        if (!inputs.department || !courses.length) {
+            return <span />
+        };
+        return (
+            <FormControl className={classes.input}>
+                <InputLabel>Course</InputLabel>
+                <Select
+                    onChange={handleInputChange}
+                    value={inputs.course || ""}
+                >
+                    {[
+                        <MenuItem value="" key="course-none">
+                            Which course?
+                        </MenuItem>,
+
+                        ...courses.map((course, i) => (
+                            <MenuItem value={course} key={i}>{course}</MenuItem>
+                        ))
+                    ]}
+                </Select>
+            </FormControl>
+        )
+    };
+
+    React.useEffect(() => {
+        console.log(_loading);
+    });
 
     return (
         <div>
@@ -69,7 +125,8 @@ export default function App() {
                             onChange={handleInputChange}
                             inputRef={mounted}
                         />
-                        <CourseSelect />
+                        {renderSelectDepartment()}
+                        {renderSelectCourse()}
                     </DialogContent>
                     <DialogActions>
                         <Button type="submit" disabled={isDisabled}>
