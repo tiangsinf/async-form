@@ -19,8 +19,6 @@ import useForm from "../hooks/useForm"
 export default function App() {
     const classes = useStyles();
 
-    const [isDisabled, setIsDisabled] = React.useState(true);
-
     const {
         inputs,
         handleInputChange,
@@ -28,25 +26,14 @@ export default function App() {
         handleFormSubmit,
         errors,
         courses,
-        _loading
+        _loading,
+        submitDisabled,
+        courseDisabled
     } = useForm(isSubmitted);
 
     function isSubmitted() {
         console.log(`name: ${inputs.name}, email: ${inputs.email}`);
     };
-
-    // mimic only cDU without cDM:
-    const mounted = React.useRef();
-    React.useEffect(() => {
-        // bypass first mount
-        if (!mounted.current) {
-            mounted.current = true;
-
-            // cDU logic
-        } else if (inputs.name.length >= 3 && inputs.email.length >= 3) {
-            setIsDisabled(false);
-        }
-    }, [inputs]);
 
     const renderSelectDepartment = () => {
         return (
@@ -56,6 +43,7 @@ export default function App() {
                     name="department"
                     onChange={handleInputChange} 
                     value={inputs.department}
+                    
                 >
                     <MenuItem value="">Which department?</MenuItem>
                     <MenuItem value="core">NodeSchool: Core</MenuItem>
@@ -66,18 +54,21 @@ export default function App() {
     };
 
     const renderSelectCourse = () => {
-        if (_loading) {
-            return <CircularProgress />
-        };
-        if (!inputs.department || !courses.length) {
-            return <span />
-        };
         return (
-            <FormControl className={classes.input}>
-                <InputLabel>Course</InputLabel>
+            <FormControl className={classes.input} disabled={courseDisabled}>
+                <InputLabel>
+                    Course&nbsp;&nbsp;
+                    {_loading ? <CircularProgress 
+                        size={14} 
+                        thickness={8}
+                        className={classes.buttonProgress}
+                    /> : null}
+                </InputLabel>
                 <Select
+                    name="course"
                     onChange={handleInputChange}
                     value={inputs.course || ""}
+
                 >
                     {[
                         <MenuItem value="" key="course-none">
@@ -88,13 +79,14 @@ export default function App() {
                             <MenuItem value={course} key={i}>{course}</MenuItem>
                         ))
                     ]}
+                    
                 </Select>
             </FormControl>
         )
     };
 
     React.useEffect(() => {
-        console.log(_loading);
+        console.log(inputs);
     });
 
     return (
@@ -113,7 +105,6 @@ export default function App() {
                             value={inputs.name}
                             helperText={errors.name ? errors.name : null}
                             onChange={handleInputChange}
-                            inputRef={mounted}
                         />
                         <TextField
                             error={errors.email ? true : false}
@@ -123,13 +114,12 @@ export default function App() {
                             value={inputs.email}
                             helperText={errors.email ? errors.email : null}
                             onChange={handleInputChange}
-                            inputRef={mounted}
                         />
                         {renderSelectDepartment()}
                         {renderSelectCourse()}
                     </DialogContent>
                     <DialogActions>
-                        <Button type="submit" disabled={isDisabled}>
+                        <Button type="submit" disabled={submitDisabled}>
                             Submit
                         </Button>
                         <Button
